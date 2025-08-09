@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            display: block;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(102,166,255,0.15);
+            max-width: 400px;
+            margin: 60px auto;
+            padding: 32px 20px 24px 20px;
+            animation: fadeIn 1s ease;
+        }
+        .logo-top {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .logo-top img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(102,166,255,0.12);
+            object-fit: cover;
+        }
+        .form-side {
+            width: 100%;
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 98vw;
+                padding: 24px 8px;
+            }
+            .logo-top img {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            text-align: center;
+            color: #3386f7;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 12px;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            background: #f7fbff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 1px 2px rgba(102,166,255,0.05);
+        }
+        .form-group input:focus {
+            border-color: #3386f7;
+            outline: none;
+            background: #e3f0ff;
+            box-shadow: 0 2px 8px rgba(102,166,255,0.12);
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #3386f7 0%, #66a6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102,166,255,0.12);
+            transition: background 0.3s, transform 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: linear-gradient(90deg, #66a6ff 0%, #3386f7 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        #registerMessage {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1rem;
+            min-height: 24px;
+            transition: color 0.3s, opacity 0.3s;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-top" style="text-align:center; margin-bottom:18px;">
+            <img src="/images/jetlouge-logo1.png" alt="Jetlouge Travels Logo" style="width:90px; height:90px; border-radius:50%; box-shadow:0 2px 8px rgba(102,166,255,0.12); object-fit: cover;">
+        </div>
+        <div class="form-side">
+            <h2>Travel & Tours Registration</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="password_confirmation">Confirm Password:</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div id="registerMessage"></div>
+            <div id="loadingSpinner" style="display:none; text-align:center; margin-top:12px;">
+                <span style="display:inline-block; width:32px; height:32px; border:4px solid #66a6ff; border-top:4px solid #3386f7; border-radius:50%; animation: spin 1s linear infinite;"></span>
+            </div>
+        </div>
+    </div>
+    <script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const password_confirmation = document.getElementById('password_confirmation').value;
+    const messageDiv = document.getElementById('registerMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    messageDiv.textContent = '';
+    messageDiv.style.opacity = '0';
+    loadingSpinner.style.display = 'block';
+    try {
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password, password_confirmation })
+        });
+        const data = await response.json();
+        loadingSpinner.style.display = 'none';
+        if (response.ok) {
+            messageDiv.textContent = 'Registration successful!';
+            messageDiv.style.color = 'green';
+            messageDiv.style.opacity = '1';
+            document.getElementById('registerForm').reset();
+            setTimeout(function() {
+                window.location.href = '/login.html';
+            }, 900);
+        } else {
+            messageDiv.textContent = data.message || 'Registration failed.';
+            messageDiv.style.color = 'red';
+            messageDiv.style.opacity = '1';
+        }
+    } catch (error) {
+        loadingSpinner.style.display = 'none';
+        messageDiv.textContent = 'An error occurred.';
+        messageDiv.style.color = 'red';
+        messageDiv.style.opacity = '1';
+    }
+});
+</script>
+</body>
+</html>
